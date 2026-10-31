@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: pg-cdc-lab
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cdc_lab
+    ports:
+      - "127.0.0.1:55432:5432"
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_replication_slots=10
+      - -c
+      - max_wal_senders=10
+    volumes:
+      - pg18_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cdc_lab"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg18_data:
